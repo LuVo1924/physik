@@ -1,0 +1,1796 @@
+/* =====================================================================
+   oberstufe.css — gemeinsame Grundkomponenten der Oberstufen-LernHTML
+   ---------------------------------------------------------------------
+   Quelle: Lucas/LernHTML_Basis/assets/oberstufe.css — NUR DORT ÄNDERN.
+   Jede andere Fassung dieser Datei (z. B. Kl11_Kl12/assets/) ist eine Kopie
+   und wird von paket_bauen.py kurs ueberschrieben.
+   Regeln: DESIGN.md (Ebenen, Rahmenbudget, Zustandsklassen)
+           COMPONENTS.md (Komponenten und Varianten)
+
+   Diese Datei enthaelt NUR stabile Grundkomponenten. Seitenspezifische
+   Simulationen, Diagramme und Sonderregeln bleiben lokal in der Lektion
+   und definieren keine Komponente dieser Datei neu.
+
+   Schriftgroessen ausschliesslich ueber --fs-*-Tokens. Einzige Ausnahme:
+   die Wurzelgroesse in html {}.
+   ===================================================================== */
+
+/* ==== BLOCK: tokens ==================================================
+   Übernommen aus KL11LB4_04_HashSignatur.html.
+   Quelle laut SPEZIFIKATION.md Abschnitt 2. Nicht von Hand ändern —
+   Änderungen gehören in die Referenzdatei und werden von dort
+   erneut übernommen:
+       python3 checks/tokens_uebernehmen.py <Referenz.html>
+   ===================================================================== */
+:root {
+  --fs-xs: 12.5px;
+  --fs-sm: 14.5px;
+  --fs-base: 16.5px;
+  --fs-lg: 18.5px;
+  --fs-h2: 20.5px;
+  --fs-h1: 25px;
+  --font: Arial, Verdana, sans-serif;
+  --font-display: Arial, Verdana, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  --font-math: 'STIX Two Math', 'Cambria Math', serif;
+  --mono: var(--font-mono);
+  --accent: #43509B;   /* Vorgabewert aus der Referenz — jede Lektion setzt --accent selbst */
+  --accent-hover: color-mix(in srgb, var(--accent) 82%, black);
+  --accent-light: color-mix(in srgb, var(--accent) 13%, white);
+  --accent-muted: color-mix(in srgb, var(--accent) 55%, white);
+  --v: #16a34a;
+  --v-bg: #f0fdf4;
+  --v-b: #86efac;
+  --i: #2563eb;
+  --i-bg: #eff6ff;
+  --i-b: #93c5fd;
+  --a: #d97706;
+  --a-bg: #fffbeb;
+  --a-b: #fde68a;
+  --vf: #dc2626;
+  --vf-bg: #fef2f2;
+  --vf-b: #fca5a5;
+  --ok: #2D8B55;
+  --ok-bg: #E8F5EE;
+  --ok-b: #93d8ac;
+  --warn: #C2410C;
+  --warn-bg: #FBF1E9;
+  --warn-b: #F0C39A;
+  --err: #C93B3B;
+  --err-bg: #FDE8E8;
+  --err-b: #EBA6A6;
+  --info: #2A7B9B;
+  --info-bg: #E4F2F7;
+  --info-b: #A9D3E1;
+  --bg: #F9F7F2;
+  --surface: #FFFFFF;
+  --surface-2: #F4F0E7;
+  --border: #E5DFD6;
+  --border-light: #EEEBE5;
+  --text: #111111;
+  --text-2: #4A4542;
+  --text-3: #7A736E;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(44, 42, 40, .06), 0 2px 8px rgba(44, 42, 40, .05);
+  --shadow-lg: 0 8px 24px rgba(44, 42, 40, .10);
+
+  /* ergänzt durch das Designsystem, nicht aus der Referenz */
+  --radius-sm: 8px;
+  --sp-1: 6px;
+  --sp-2: 10px;
+  --sp-3: 16px;
+  --sp-4: 24px;
+}
+/* ==== END: tokens ==================================================== */
+
+/* ==== Schriften =====================================================
+   Schriftkonzept seit 20.09.2026 (SPEZIFIKATION.md Abschnitt 1):
+     Fliesstext und Ueberschriften  Arial, Verdana — Systemschriften, keine Datei
+     Code, Bitmuster, Tabellenwerte JetBrains Mono — lokal, SIL OFL
+     Mathematische Variablen        STIX Two Math  — lokal, SIL OFL (.lesson-math)
+   Lokale woff2 neben dieser Datei. Kein <link> zu einem Schriftdienst,
+   keine Anfrage nach aussen. Quelle der Dateien: @fontsource-variable/*.
+     JetBrains Mono      (c) 2020 The JetBrains Mono Project Authors
+     STIX Two Math       (c) 2001-2021 The STIX Fonts Project Authors
+   DM Sans und Bricolage Grotesque gehoeren zum frueheren Schriftkonzept und
+   liegen nur noch in _shared/fonts/ fuer noch nicht migrierte Seiten.
+   ===================================================================== */
+@font-face { font-family:'JetBrains Mono'; font-style:normal; font-weight:100 800;
+  font-display:swap; size-adjust:90%; src:url(fonts/jetbrains-mono-latin-wght-normal.woff2) format('woff2'); }
+@font-face { font-family:'STIX Two Math'; font-style:normal; font-weight:400;
+  font-display:swap; src:url(fonts/stix-two-math-latin-400-normal.woff2) format('woff2'); }
+
+/* ==== Reset und Grundtypografie ===================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  /* Keine Ligaturen: JetBrains Mono zeichnet sonst != >= <= == -> als
+     ein Symbol (≠ ≥ ≤ …). Schueler sollen sehen, was sie tippen. */
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "calt" 0;
+}
+
+html {
+  font-size: 16.5px;               /* bewusst in px: immun gegen LMS-Skalierung */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.62;
+}
+
+/* OPAL laedt nach der Lektions-CSS sein Theme (basic_new/content.css) mit
+   einer Regel auf "html, body", die Schriftgroesse (92 Prozent), weissen
+   Hintergrund und graue Textfarbe setzt (DESIGN.md 12.3).
+   Gleiche Spezifitaet + spaetere Position = OPAL gewinnt. html:root hat
+   hoehere Spezifitaet und setzt Grundgroesse, Hintergrund und Textfarbe
+   wieder durch (ohne !important). */
+html:root {
+  font-size: 16.5px;
+  background: var(--bg);
+}
+html:root body {
+  font-size: var(--fs-base);
+  background: var(--bg);
+  color: var(--text);
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); line-height: 1.25; margin: 0 0 var(--sp-2); }
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h2); font-weight: 600; }
+h4 { font-size: var(--fs-base); font-weight: 700; }
+
+p  { margin: 0 0 var(--sp-2); }
+ul, ol { margin: 0 0 var(--sp-2); padding-left: 1.4em; }
+li { margin-bottom: var(--sp-1); }
+strong, b { font-weight: 700; }
+code, pre { font-family: var(--font-mono); }
+
+a { color: var(--accent); text-underline-offset: .2em; }
+a:hover { color: var(--accent-hover); }
+
+hr.section-divider {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: var(--sp-3) 0;
+}
+
+.caption { font-size: var(--fs-sm); color: var(--text-2); margin-top: var(--sp-1); }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ==== Seitengeruest ================================================= */
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--sp-3) var(--sp-4) var(--sp-4);
+}
+
+/* Erzeugt nur bei kurzen Sprungzielen den fehlenden Scrollraum. Ein eigenes
+   Abschlusselement bleibt auch dann wirksam, wenn die schmale Ansicht die
+   Innenabstaende der Seitenhuelle anpasst. */
+.wrap::after {
+  content: "";
+  display: block;
+  height: var(--lesson-scroll-space, 0px);
+}
+
+/* OPAL kann nach der Lektions-CSS eigene Inhaltsstile laden. Kerntext bleibt
+   deshalb ausdrücklich auf der verbindlichen Fließtextstufe. */
+body .wrap .phase p,
+body .wrap .phase li,
+body .wrap .station-fazit,
+/* Hinweisboxen tragen ihren Text in einem <span> statt in <p>; ohne diese
+   Zeilen schrumpft er in OPAL unter die Fließtextstufe. */
+body .wrap .phase .callout > span,
+body .wrap .phase .merker > span,
+body .wrap .phase .koop-hinweis > span,
+body .wrap .phase .hefter-hinweis > span {
+  font-size: var(--fs-base) !important;
+  line-height: 1.62;
+}
+body .wrap .phase .caption,
+body .wrap .phase .chat-bubble p {
+  font-size: var(--fs-sm) !important;
+}
+
+/* ==== Kopfleiste und Seitenkopf =====================================
+   Bauform der Referenzdateien (KL11LB1_01/02, KL11LB4_02/03/04,
+   KL11LB1_03): eine sticky Kopfleiste in der Lektionsfarbe mit Symbol,
+   Titel, den beiden Ansichtsknoepfen und den nummerierten Phasen-Pills.
+   Darunter der Seitenkopf als ruhige Karte mit Metazeile und Stundenziel;
+   er scrollt normal weg. Seit 22.09.2026 verbindlich (SPEZIFIKATION.md §3).
+   ===================================================================== */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  border-radius: var(--radius);
+  padding: 12px 18px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-lg);
+}
+
+.tn-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tn-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.tn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .22);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--fs-lg);
+}
+
+.top-nav h1 {
+  color: #fff;
+  margin: 0;
+  font-size: var(--fs-h1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mode-btn,
+.tn-pill {
+  min-height: 40px;
+  border: 1.5px solid rgba(255, 255, 255, .5);
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  border-radius: 20px;
+  font-family: var(--font);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  /* nicht „all“: sonst blendet auch der Fokusrahmen erst langsam ein */
+  transition: background .15s, border-color .15s, color .15s, box-shadow .15s;
+}
+.mode-btn { padding: 7px 15px; }
+
+.mode-btn:hover,
+.tn-pill:hover { background: rgba(255, 255, 255, .3); }
+
+.mode-btn.active,
+.tn-pill.active {
+  background: #fff;
+  border-color: #fff;
+  color: var(--accent-hover);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+}
+
+.mode-btn:focus-visible,
+.tn-pill:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+.tn-phases {
+  display: flex;
+  gap: 8px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.tn-pill {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 15px 7px 8px;
+}
+
+.tn-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .25);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.tn-pill.active .tn-num {
+  background: var(--accent-light);
+  color: var(--accent-hover);
+}
+
+/* ==== Fortschrittsanzeige (nur mit FORTSCHRITT der Seite) ============
+   Die Elemente entstehen in fortschrittInit() (oberstufe-core.js); ohne
+   Seitenliste gibt es sie nicht. Ein Segment je geprüfter Aufgabe,
+   Zustand in data-zustand: ok · teil · skip · offen.
+   ===================================================================== */
+.tn-pill.fortschritt-pill {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  padding-bottom: 6px;
+}
+
+.fortschritt-kopf {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.fortschritt-band {
+  display: flex;
+  gap: 2px;
+}
+
+.fortschritt-frei .fortschritt-band { opacity: .6; }
+
+.fortschritt-seg {
+  flex: 1;
+  min-width: 10px;
+  height: 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, .22);
+  cursor: pointer;
+  transition: transform .1s;
+}
+
+.fortschritt-seg:hover { transform: scaleY(1.5); }
+.fortschritt-seg[data-zustand="ok"] { background: #4ADE80; }
+.fortschritt-seg[data-zustand="teil"] { background: #FBBF24; }
+/* übersprungen: rot gestreift, damit es auch ohne Farbsehen auffällt */
+.fortschritt-seg[data-zustand="skip"] { background: repeating-linear-gradient(135deg, #F87171 0 4px, #7F1D1D 4px 7px); }
+.tn-pill.active .fortschritt-seg { background: var(--border); }
+.tn-pill.active .fortschritt-seg[data-zustand="ok"] { background: var(--ok); }
+.tn-pill.active .fortschritt-seg[data-zustand="teil"] { background: #F59E0B; }
+.tn-pill.active .fortschritt-seg[data-zustand="skip"] { background: repeating-linear-gradient(135deg, var(--err) 0 4px, #7F1D1D 4px 7px); }
+
+/* Phase fertig: grüner Rand; etwas übersprungen: roter Rand */
+.tn-pill.fortschritt-fertig { border-color: #4ADE80; }
+.tn-pill.fortschritt-luecke { border-color: #F87171; }
+
+.fortschritt-summe {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Mitlaufende Leiste im OPAL-iframe, sichtbar nur mit .fortschritt-zeigen.
+   Die Höhe steht als FS_SCHWEBE_HOEHE auch in oberstufe-core.js: Sprünge im
+   iframe setzen das Ziel um so viel tiefer. Beide nur gemeinsam ändern.
+   Die Leiste steht in der OPAL-Elternseite (fixiert); fsElternStil() kopiert
+   alle Regeln mit .fortschritt-schwebe/-gruppe/-name/-band/-seg/-summe/-mehr/
+   -frei/-hier/-zeigen dorthin. Regeln, die tn-pill, tn-title-row oder body
+   enthalten, werden nicht kopiert. */
+.fortschritt-schwebe {
+  position: absolute;
+  z-index: 600;
+  display: none;
+  align-items: stretch;
+  gap: 8px;
+  box-sizing: border-box;
+  height: 42px;
+  padding: 3px 10px;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  box-shadow: var(--shadow-lg);
+  color: #fff;
+}
+
+.fortschritt-schwebe.fortschritt-zeigen { display: flex; }
+
+.fortschritt-gruppe {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: var(--fs-xs);
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.fortschritt-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.fortschritt-gruppe .fortschritt-seg { min-width: 6px; height: 10px; }
+.fortschritt-gruppe.fortschritt-hier { box-shadow: 0 0 0 2px #fff; }
+.fortschritt-schwebe .fortschritt-summe { align-self: center; margin-left: 0; padding: 0 10px; font-size: var(--fs-xs); line-height: 1.5; white-space: nowrap; }
+
+/* schmaler als 1200 px nur die Zahl, sonst bricht die Titelzeile um */
+@media (max-width: 1199px) {
+  .fortschritt-mehr { display: none; }
+}
+
+/* Schmales Fenster (Telefon, OPAL-iframe): Titel darf umbrechen, die
+   Phasenleiste bleibt einzeilig und scrollt in sich. */
+@media (max-width: 560px) {
+  .top-nav { padding: 10px 12px; gap: 8px; }
+  .top-nav h1 { font-size: var(--fs-lg); white-space: normal; }
+  .tn-icon { display: none; }
+  .tn-title-row { gap: 8px; }
+  .mode-toggle { width: 100%; flex-wrap: nowrap; }
+  .mode-btn { flex: 1 1 0; white-space: normal; padding: 6px 10px; }
+  .tn-title-row .fortschritt-summe { display: none; }
+}
+
+/* Seitenkopf: NICHT sticky, scrollt normal weg */
+.page-header {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.header-meta {
+  font-size: var(--fs-base);
+  color: var(--text-2);
+  margin: 2px 0 0;
+}
+
+.header-goal,
+.goal {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-light);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 10px 14px;
+  margin-top: 10px;
+  font-size: var(--fs-base);
+  color: var(--text-2);
+}
+.header-goal strong,
+.goal strong { color: var(--accent-hover); }
+
+.footer {
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  text-align: center;
+}
+.footer p { margin: 0 0 var(--sp-1); }
+
+/* ==== Phasen und Teilschritte =======================================
+   Ebene 0 — nie gerahmt.
+   Grundzustand: alle Teilschritte sichtbar (ungated). Schrittweises
+   Aufdecken schaltet eine Phase per data-aufdecken ein — nie durch eine
+   globale Umdefinition von .subphase (DESIGN.md Abschnitt 7).
+   ===================================================================== */
+.phase { display: none; }
+.phase.on { display: block; }
+body.mode-full .phase { display: block !important; }
+
+.phase > h2 { margin-top: var(--sp-4); }
+
+.subphase { display: block; }
+
+/* Additives Aufdecken mit Sperrhinweisen (SPEZIFIKATION.md §3, Bauform der
+   Referenz KL11LB4_03_AsymVerschluesselung.html und KL11LB1_03). Eine Phase
+   schaltet es mit data-aufdecken="schrittweise" ein: anfangs steht nur Teil 1,
+   jeder weitere kommt hinzu, Vorheriges bleibt stehen. Zwischen zwei Teilen
+   steht ein sichtbarer .subphase-lock-hint mit ungatetem „Trotzdem …"-Knopf.
+   Die Steuerung liegt im unsichtbaren .subphase-progress-Container. */
+.phase[data-aufdecken] .subphase { display: none; }
+.phase[data-aufdecken] .subphase.on { display: block; }
+.subphase-progress { display: none; }
+
+.subphase-lock-hint {
+  display: block;
+  margin: 16px 0;
+  padding: 11px 15px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  color: var(--text-3);
+  line-height: 1.6;
+}
+.subphase-lock-hint .btn { margin-top: 8px; }
+
+body.mode-full .phase[data-aufdecken] .subphase { display: block !important; }
+body.mode-full .subphase-lock-hint { display: none !important; }
+
+/* Verbindungsband zwischen zwei Teilen: „Das ist geklärt – jetzt kommt …" */
+.connector { display: flex; align-items: center; gap: 12px; margin: 16px 0 20px; color: var(--accent); }
+.connector-line { flex: 1; border-top: 2px solid var(--accent-muted); }
+.connector-text {
+  padding: 6px 18px;
+  background: var(--accent-light);
+  border: 2px solid var(--accent-muted);
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: var(--fs-base);
+  color: var(--accent);
+  text-align: center;
+}
+
+
+.weiter-box { text-align: center; margin: var(--sp-3) 0 var(--sp-1); }
+.weiter-box .btn-ghost { margin-left: var(--sp-2); }
+body.mode-full .weiter-box { display: none !important; }
+
+.lock-hint {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--warn-b);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+}
+body.mode-full .lock-hint { display: none !important; }
+
+.phase-bridge {
+  display: none;
+  margin: var(--sp-4) 0 var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+.phase-bridge.on { display: block; }
+body.mode-full .phase-bridge { display: block !important; }
+
+/* ==== Unterrichtsmodus ==============================================
+   Startzustand ist der Unterrichtsmodus. Im Vollmodus stehen alle Phasen
+   untereinander und die Erklaertexte erscheinen.
+   ===================================================================== */
+.erklaertext { display: none; }
+body.mode-full .erklaertext { display: block; }
+
+/* ==== Karte und Auftrag — Ebene 1 =================================== */
+.card {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--sp-3) var(--sp-4);
+  margin: var(--sp-3) 0;
+}
+.card > h2:first-child, .card > h3:first-child { margin-top: 0; }
+
+.card--soft { background: var(--surface-2); box-shadow: none; }
+
+/* Ebene 2 innerhalb der Karte: Streifen statt zweiter Flaeche */
+.subcard {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--accent-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3) var(--sp-4);
+  margin: var(--sp-3) 0;
+}
+.subcard > h3:first-child, .subcard > h4:first-child { margin-top: 0; }
+
+.auftrag-kopf {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-2);
+}
+.a-nr {
+  flex: 0 0 auto;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--surface);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.a-ti { font-weight: 700; }
+.a-form {
+  padding: 2px 9px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+}
+.a-text { margin-bottom: var(--sp-2); }
+
+/* Hinweis auf einen gemeinsamen Input (Lehrkraft erklärt, nicht entdecken) */
+.input-badge {
+  display: block;
+  margin: 0 0 var(--sp-2);
+  padding: 6px 12px;
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+/* Vollansicht: Auftragsdetails ausblenden (SPEZIFIKATION.md Abschnitt 4) */
+body.mode-full .a-form,
+body.mode-full .a-text,
+body.mode-full .input-badge { display: none; }
+
+/* Brückenkarte am Phasenende: Rückblick, Kernfrage, Merker, Weiter-Knopf.
+   Anders als .phase-bridge ist sie immer sichtbar (kein Gate). */
+.card--bridge { background: var(--accent-light); border-color: var(--accent-muted); }
+.card--bridge > h2, .card--bridge > h3 { color: var(--accent-hover); }
+.kernfrage {
+  margin-top: var(--sp-2);
+  padding-left: var(--sp-2);
+  border-left: 4px solid var(--accent-muted);
+  font-weight: 700;
+  color: var(--text);
+}
+.bridge-go { margin-top: var(--sp-3); text-align: right; }
+
+/* ==== Station — Ebene 1, Geschwister, nie verschachtelt ============= */
+.station {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: var(--sp-3) var(--sp-4);
+  margin: var(--sp-3) 0;
+}
+.station.done { border-left: 4px solid var(--ok-b); }
+
+.station-head { display: flex; align-items: baseline; gap: var(--sp-2); flex-wrap: wrap; }
+.station-head h3 { margin: 0; }
+.station-nr { font-family: var(--font-display); font-size: var(--fs-h2); color: var(--accent); }
+.station-lead { flex-basis: 100%; margin: var(--sp-1) 0 0; color: var(--text-2); }
+
+/* Ebene 2 innerhalb der Station: Aufgabenblock, keine zweite Karte */
+.mini-task {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3);
+  margin: var(--sp-3) 0;
+}
+.mini-task > h4:first-child { margin-top: 0; }
+
+.feedback {
+  margin: var(--sp-2) 0;
+  padding: 0;
+}
+.feedback:empty { display: none; }
+.feedback.info { padding: var(--sp-2) var(--sp-3); background: var(--surface);
+  border: 1.5px solid var(--border); border-left: 4px solid var(--info-b);
+  border-radius: var(--radius-sm); }
+/* Rückmeldung einer Eingabeaufgabe (checkGroup): Text mit Zeichen, nie nur Farbe */
+.feedback.ok  { color: var(--ok); }
+.feedback.err { color: var(--err); }
+
+.reveal-panel { display: none; }
+.reveal-panel.on { display: block; }
+body.mode-full .reveal-panel { display: block !important; }
+
+.fazit { display: none; }
+.fazit.on { display: block; }
+body.mode-full .fazit { display: block !important; }
+
+.station-fazit {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--ok-b);
+  border-radius: var(--radius-sm);
+}
+.fazit-next {
+  margin-top: var(--sp-1);
+  padding-top: var(--sp-1);
+  border-top: 1px dashed var(--border);
+  color: var(--text-2);
+  font-style: italic;
+}
+
+.bilanz-item { display: none; }
+.bilanz-item.on { display: list-item; }
+body.mode-full .bilanz-item { display: list-item !important; }
+
+/* Stationenleiste und Fortschritt */
+.path-overview { display: grid; gap: var(--sp-2); margin: var(--sp-3) 0; }
+@media (min-width: 700px) { .path-overview { grid-auto-flow: column; grid-auto-columns: 1fr; } }
+
+.path-step {
+  padding: var(--sp-2) var(--sp-3);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+.path-step strong { display: block; color: var(--accent); margin-bottom: 2px; }
+.path-step.active { border-color: var(--accent); background: var(--accent-light); }
+.path-step.done { border-color: var(--ok-b); }
+.path-step.done strong::after { content: ' \2713'; color: var(--ok); }
+
+.progress-line { display: flex; align-items: center; gap: var(--sp-2); margin: var(--sp-2) 0; }
+.progress-track {
+  flex: 1; height: 7px; border-radius: 99px;
+  background: var(--surface-2); border: 1px solid var(--border); overflow: hidden;
+}
+.progress-fill { height: 100%; width: 0; border-radius: 99px; background: var(--accent); transition: width .3s ease; }
+.progress-label { font-size: var(--fs-sm); color: var(--text-2); font-weight: 600; white-space: nowrap; }
+
+/* ==== Hinweis- und Sicherungsboxen — Streifenprinzip ================
+   Neutraler Grund, Standardrahmen, farbiger linker Rand.
+   Vollflaechige Farbe bleibt den Pass/Fail-Signalen vorbehalten.
+   ===================================================================== */
+.merker {
+  display: flex; align-items: center; gap: var(--sp-1);
+  margin: var(--sp-3) 0 2px;
+  padding: 7px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 3px solid var(--ok-b);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+}
+.merker b { color: var(--ok); }
+
+.hefter-box {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+.hefter-box > :last-child { margin-bottom: 0; }
+.hefter-label {
+  display: inline-block;
+  margin-bottom: var(--sp-1);
+  padding: 2px 9px;
+  border: 1px solid var(--accent-muted);
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .02em;
+}
+.hefter-box--result { border-left-color: var(--accent); }
+.hefter-box--copy   { border-left-color: var(--accent); }
+.hefter-box--note   { border-left-color: var(--accent-muted); }
+
+.callout {
+  display: flex; gap: var(--sp-2); align-items: flex-start;
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--info-b);
+  border-radius: var(--radius-sm);
+}
+.callout > :last-child { margin-bottom: 0; }
+.callout.warn { border-left-color: var(--warn-b); }
+.callout.err  { border-left-color: var(--err-b); }
+.callout.ok   { border-left-color: var(--ok-b); }
+/* Phasenziel am Anfang einer Phase: „🎯 Phase n · …: Was du hier tust.“ */
+.callout.goal { border-left-color: var(--accent-muted); color: var(--text-2); }
+.callout.goal strong { color: var(--accent-hover); }
+
+/* Kleine Randhinweise an einer Aufgabe: Partner-/Gruppenrolle, Hefterbezug */
+.koop-hinweis, .hefter-hinweis {
+  display: flex; gap: var(--sp-2); align-items: flex-start;
+  margin: var(--sp-2) 0;
+  padding: 7px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--info-b);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+}
+.koop-hinweis b { color: var(--info); }
+.hefter-hinweis { border-left-color: var(--ok-b); }
+.hefter-hinweis b { color: var(--ok); }
+
+/* Durchgerechnetes Beispiel (DIDAKTIK.md §3.4): Titel und Schritte */
+.beispiel {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--info-b);
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+}
+.beispiel-titel { margin-bottom: var(--sp-1); font-weight: 700; color: var(--accent-hover); }
+.beispiel-schritt { margin: 2px 0; font-family: var(--font-mono); white-space: pre-wrap; }
+/* Schritte in Worten statt Rechenweg: Fließtextschrift, Quelltext-Umbrüche zählen nicht */
+.beispiel--text .beispiel-schritt { margin: var(--sp-1) 0; font-family: inherit; white-space: normal; }
+
+/* Formel oder Ausdruck in eigener Zeile; --kasten hebt ihn als Ergebnis hervor */
+.formula { margin: var(--sp-2) 0; font-weight: 700; }
+.formula--kasten {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--accent-light);
+  border: 1.5px solid var(--accent-muted);
+  border-radius: var(--radius);
+  color: var(--accent-hover);
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  text-align: center;
+}
+.formula .term { white-space: nowrap; }
+
+.sol {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--ok-b);
+  border-radius: var(--radius-sm);
+}
+
+/* ==== Quiz — hier ist vollflaechige Farbe verbindlich =============== */
+.quiz-item {
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.quiz-q { font-weight: 700; margin-bottom: var(--sp-2); }
+.quiz-opts { display: grid; gap: var(--sp-1); }
+
+.quiz-btn, .choice-btn {
+  font: inherit;
+  font-size: var(--fs-base);
+  text-align: left;
+  padding: 10px 14px;
+  min-height: 40px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+.quiz-btn:hover:not(:disabled), .choice-btn:hover:not(:disabled) { background: var(--accent-light); }
+.quiz-btn:disabled, .choice-btn:disabled { cursor: default; }
+
+.quiz-btn.correct, .choice-btn.correct {
+  background: var(--ok-bg); border-color: var(--ok); color: var(--ok); font-weight: 700;
+}
+.quiz-btn.wrong, .choice-btn.wrong, .choice-btn.incorrect {
+  background: var(--err-bg); border-color: var(--err); color: var(--err);
+}
+.quiz-btn.tryagain { background: var(--warn-bg); border-color: var(--warn-b); }
+
+.quiz-fb { margin-top: var(--sp-2); }
+.quiz-fb:empty { display: none; }
+.quiz-fb.ok   { padding: var(--sp-2) var(--sp-3); background: var(--ok-bg);
+  border: 1.5px solid var(--ok-b); border-radius: var(--radius-sm); }
+.quiz-fb.ng   { padding: var(--sp-2) var(--sp-3); background: var(--err-bg);
+  border: 1.5px solid var(--err-b); border-radius: var(--radius-sm); }
+.quiz-fb.hint { padding: var(--sp-2) var(--sp-3); background: var(--warn-bg);
+  border: 1.5px solid var(--warn-b); border-radius: var(--radius-sm); }
+
+/* ==== Aufklappen: Vertiefung und Kuer — Ebene 1 =====================
+   Verbindliches Erscheinungsbild aus SPEZIFIKATION.md Abschnitt 9a.
+   ===================================================================== */
+details.vertiefung, details.kuer {
+  position: relative; display: block; overflow: hidden;
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--accent-muted);
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 0;
+  margin: var(--sp-3) 0;
+  box-shadow: var(--shadow);
+  transition: border-color .18s, box-shadow .18s;
+}
+details.kuer { margin-top: 20px; }
+
+details.vertiefung[open], details.kuer[open] {
+  border-color: var(--accent-muted);
+  border-left-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+}
+
+details.vertiefung > summary, details.kuer > summary {
+  list-style: none; cursor: pointer;
+  min-height: 62px;
+  padding: 14px 58px 14px 16px;
+  position: relative;
+  display: flex; align-items: center; gap: var(--sp-2);
+  background: var(--surface);
+  transition: background .15s;
+}
+details.vertiefung > summary:hover, details.kuer > summary:hover { background: var(--surface-2); }
+details.vertiefung > summary:focus-visible, details.kuer > summary:focus-visible {
+  outline: 3px solid var(--accent-muted); outline-offset: -3px;
+}
+details.vertiefung > summary::-webkit-details-marker,
+details.kuer > summary::-webkit-details-marker { display: none; }
+
+details.vertiefung > summary::before, details.kuer > summary::before {
+  flex: 0 0 auto;
+  padding: 3px 8px;
+  border: 1px solid var(--accent-muted);
+  border-radius: 999px;
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+details.vertiefung > summary::before { content: 'Optional'; }
+details.kuer > summary::before { content: '\2605 freiwillig'; }
+
+details.vertiefung > summary::after, details.kuer > summary::after {
+  content: '\203A';
+  position: absolute; right: 15px; top: 50%;
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border: 1.5px solid var(--accent-muted);
+  border-radius: 50%;
+  background: var(--accent-light);
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-size: var(--fs-h2);
+  font-weight: 700;
+  line-height: 1;
+  transition: transform .18s, background .18s;
+}
+details.vertiefung[open] > summary::after, details.kuer[open] > summary::after {
+  transform: translateY(-50%) rotate(90deg);
+  background: var(--surface);
+}
+
+details.vertiefung > summary h2, details.kuer > summary h2,
+details.vertiefung > summary h3, details.kuer > summary h3 {
+  display: block; margin: 0; color: var(--text);
+}
+
+details.vertiefung > .aufklapp-body, details.kuer > .aufklapp-body {
+  padding: 18px 20px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+@media (max-width: 620px) {
+  details.vertiefung > summary, details.kuer > summary {
+    align-items: flex-start; flex-direction: column; padding-right: 54px;
+  }
+}
+
+/* ==== Akkordeon "Das hast du gelernt" — Ebene 2 =====================
+   Die open-Klasse gehoert auf den Button (.acc-head), nicht auf .acc-item.
+   ===================================================================== */
+.acc-item { border-bottom: 1px solid var(--border); }
+.acc-item:first-of-type { border-top: 1px solid var(--border); }
+
+.acc-head {
+  width: 100%;
+  font: inherit; font-size: var(--fs-base); font-weight: 600;
+  text-align: left;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
+  min-height: 46px;
+  padding: var(--sp-2) 0;
+  background: none; border: 0; color: var(--text); cursor: pointer;
+}
+.acc-icon { flex: 0 0 auto; color: var(--accent); transition: transform .18s; }
+.acc-head.open .acc-icon { transform: rotate(90deg); }
+
+.acc-body { display: none; padding: 0 0 var(--sp-3); color: var(--text-2); }
+.acc-head.open + .acc-body { display: block; }
+
+/* ==== Gestufte Hilfen =============================================== */
+.tool-hidden { display: none; margin-top: var(--sp-2); }
+
+/* ==== Bedienelemente — Ebene 3 ====================================== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-1);
+  font: inherit; font-size: var(--fs-base);
+  min-height: 40px;
+  padding: 9px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.btn:hover:not(:disabled) { background: var(--surface-2); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600;
+}
+.btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+
+.btn-ghost { background: transparent; color: var(--accent); border-color: var(--accent-muted); }
+.btn-ghost:hover:not(:disabled) { background: var(--accent-light); }
+
+.btn-sm { min-height: 34px; padding: 6px 12px; }
+
+/* Ziehbare Karte: trägt Zuordnungstext, deshalb Fließtextgröße (DESIGN.md §2.1).
+   Als <button> erbt sie Schrift und Farbe nicht von selbst. */
+.chip {
+  display: inline-flex; align-items: center;
+  min-height: 44px;
+  padding: 6px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font: inherit;
+  font-size: var(--fs-base);
+  color: var(--text);
+  text-align: left;
+  cursor: grab;
+}
+.chip[hidden] { display: none; }
+.chip.selected { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.chip:focus-visible, .dropzone:focus-visible { outline: 3px solid var(--accent-muted); outline-offset: 2px; }
+
+.dropzone {
+  min-height: 46px;
+  padding: var(--sp-2);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+button.dropzone { width: 100%; font: inherit; font-size: var(--fs-base); color: var(--text); text-align: left; cursor: pointer; }
+.dropzone.drag-over { border-color: var(--accent); background: var(--accent-light); }
+.dropzone.filled { border-style: solid; }
+.dropzone.correct { border-style: solid; border-color: var(--ok); background: var(--ok-bg); }
+.dropzone.wrong   { border-style: solid; border-color: var(--err); background: var(--err-bg); }
+
+input[type="text"], input[type="number"], select, textarea {
+  font: inherit; font-size: var(--fs-base);
+  min-height: 40px;
+  padding: 7px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+textarea { min-height: 96px; line-height: 1.6; }
+
+/* Knopfzeile unter einer Aufgabe: Prüfen · Leeren · Hilfe */
+.btn-row { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-top: var(--sp-2); }
+
+/* Eingabeaufgabe: Beschriftung und Feld in einer Zeile */
+.field-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; margin: var(--sp-1) 0; }
+.field-row label { min-width: 12em; color: var(--text-2); font-family: var(--font-mono); }
+
+/* Antwortfeld einer prüfbaren Aufgabe (checkGroup). Zustand .ok/.err setzt die
+   Basis erst beim zweiten Fehlversuch – zusätzlich gestrichelt, nie nur Farbe. */
+.eingabe {
+  width: 9em;
+  min-height: 40px;
+  padding: 6px 9px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+}
+.eingabe--kurz { width: 5em; }
+.eingabe--term { width: 22em; max-width: 100%; }   /* ein Satz mit ca. 38 Zeichen */
+.eingabe--zelle { width: 3.2em; padding: 4px 2px; text-align: center; }
+.eingabe:focus { border-color: var(--accent); }
+.eingabe.ok  { border-color: var(--ok); background: var(--ok-bg); }
+.eingabe.err { border-color: var(--err); background: var(--err-bg); border-style: dashed; }
+
+/* Freitextantwort über die ganze Breite */
+/* Mindestens fuenf Zeilen; waechst beim Schreiben mit (field-sizing, sonst
+   bleibt die Mindesthoehe und der Griff zum Aufziehen). */
+textarea.freitext {
+  width: 100%;
+  min-height: calc(5lh + 18px);
+  max-height: 60vh;
+  field-sizing: content;
+  resize: vertical;
+}
+
+/* Checkliste zur Selbsteinschätzung */
+.checkliste { display: grid; gap: var(--sp-2); margin: var(--sp-2) 0; }
+.checkliste label { display: flex; gap: var(--sp-2); align-items: flex-start; color: var(--text-2); cursor: pointer; }
+.checkliste input { flex: 0 0 auto; inline-size: 1.15rem; block-size: 1.15rem; margin-top: .25rem; accent-color: var(--accent); }
+
+/* Begriffszuordnung per Klick (matchSelect/matchPlace): Begriff wählen, dann Bedeutung */
+.match { margin: var(--sp-2) 0; }
+.match-pool { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-2) 0 var(--sp-3); }
+.match-chip {
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+.match-chip.sel  { border-color: var(--accent); background: var(--accent-light);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent); }
+.match-chip.used { opacity: .3; pointer-events: none; }
+.match-zone {
+  display: flex; gap: var(--sp-3); align-items: center;
+  margin: var(--sp-2) 0;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+}
+.match-slot {
+  display: flex; flex-shrink: 0; align-items: center; justify-content: center;
+  min-width: 150px; min-height: 34px;
+  padding: 2px 6px;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-3);
+  font-weight: 700;
+  text-align: center;
+}
+.match-def { color: var(--text-2); }
+.match-zone.filled .match-slot { border-style: solid; color: var(--accent-hover); }
+.match-zone.z-ok  { border-color: var(--ok-b); background: var(--ok-bg); }
+.match-zone.z-err { border-color: var(--err-b); background: var(--err-bg); }
+.match-chip:focus-visible, .match-zone:focus-visible { outline: 3px solid var(--accent-muted); outline-offset: 2px; }
+
+/* Reihenfolge per Klick (reihenfolgeSelect): Karte antippen, sie belegt den
+   nächsten freien Platz; geprüft wird gesammelt gegen data-correct */
+.reihenfolge { margin: var(--sp-2) 0; }
+.reihenfolge-pool { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-2) 0 var(--sp-3); }
+.reihenfolge-karte {
+  padding: 7px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-2);
+  cursor: pointer;
+  user-select: none;
+}
+.reihenfolge-karte:hover { border-color: var(--accent); color: var(--accent); }
+.reihenfolge-karte.used { opacity: .3; pointer-events: none; }
+.reihenfolge-karte:focus-visible { outline: 3px solid var(--accent-muted); outline-offset: 2px; }
+.reihenfolge-plaetze { counter-reset: reihenfolge; margin: var(--sp-2) 0; }
+.reihenfolge-platz {
+  display: flex; gap: var(--sp-2); align-items: center;
+  min-height: 44px;
+  margin: 6px 0;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-2);
+}
+.reihenfolge-platz::before { counter-increment: reihenfolge; content: counter(reihenfolge) "."; min-width: 22px; font-weight: 700; color: var(--accent); }
+.reihenfolge-platz.z-ok  { border-color: var(--ok-b); background: var(--ok-bg); }
+.reihenfolge-platz.z-err { border-color: var(--err-b); background: var(--err-bg); }
+
+/* =====================================================================
+   Parsons-Puzzle (.parsons) — Code in Reihenfolge und Einrückung (COMPONENTS.md §8)
+   Programmzeilen aus einem Vorrat ins Programm bringen, in die richtige
+   Reihenfolge und (je nach Modus) mit der richtigen Einrückung. Fehlzeilen
+   gehören nicht hinein. Einrückung in Schritten von vier Zeichen, so wie
+   in Python; die Hilfslinien zeigen jede Stufe.
+   ===================================================================== */
+.parsons { margin: var(--sp-3) 0; }
+.parsons-bereiche { display: grid; gap: var(--sp-3); align-items: start; }
+.parsons-bereiche > * { min-width: 0; }   /* lange Codezeilen scrollen in sich, statt die Seite zu verbreitern */
+@media (min-width: 760px) {
+  .parsons-bereiche { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+}
+.parsons-titel { margin: 0 0 var(--sp-1); font-weight: 700; color: var(--text-2); font-size: var(--fs-sm); }
+
+/* Vorrat: eine Zeile je Knopf, untereinander */
+.parsons-vorrat { display: flex; flex-direction: column; gap: 6px; min-height: 48px; }
+.parsons-zeile {
+  display: block; width: 100%; text-align: left;
+  padding: 7px 12px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); color: var(--text);
+  font-family: var(--font-mono); font-size: var(--fs-base); line-height: 1.5;
+  /* lange Zeilen brechen um statt zu scrollen: sonst läge das Prüfzeichen (✓ ✗)
+     im schmalen Fenster über dem Zeilenende. Einrückung kommt aus dem Innenabstand. */
+  white-space: pre-wrap; overflow-wrap: anywhere;
+  cursor: pointer; user-select: none;
+}
+.parsons-vorrat .parsons-zeile:hover { border-color: var(--accent); color: var(--accent); }
+.parsons-vorrat .parsons-zeile.used { opacity: .3; pointer-events: none; }
+.parsons-zeile:focus-visible { outline: 3px solid var(--accent-muted); outline-offset: 2px; }
+/* Zeilentext steht in <code> (Typografieprüfung lässt Code aus); kein eigenes Code-Aussehen */
+.parsons-zeile code { font: inherit; color: inherit; background: none; padding: 0; border: 0; white-space: inherit; }
+/* Modus „vorgegeben": die Einrückung steht schon im Vorrat */
+.parsons[data-einrueckung="vorgegeben"] .parsons-vorrat .parsons-zeile {
+  padding-left: calc(12px + var(--ebene, 0) * 4ch);
+}
+
+/* Programm: nummerierte Zeilen mit Einrückungslinien */
+.parsons-programm {
+  list-style: none; counter-reset: parsons;
+  margin: 0; padding: 6px;
+  min-height: 120px;
+  border: 1.5px dashed var(--border); border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.parsons-programm:empty::before {
+  content: attr(data-leer);
+  display: block; padding: var(--sp-3); color: var(--text-3); font-size: var(--fs-sm);
+}
+.parsons-programm .parsons-zeile {
+  position: relative; counter-increment: parsons;
+  margin: 4px 0;
+  padding-left: calc(3em + var(--ebene, 0) * 4ch);
+  background-image: repeating-linear-gradient(to right,
+      transparent 0 calc(4ch - 2px), var(--accent-muted) calc(4ch - 2px) 4ch);
+  background-size: calc(var(--ebene, 0) * 4ch) 100%;
+  background-position: calc(3em - 2px) 0;
+  background-repeat: no-repeat;
+  background-color: var(--surface);
+}
+.parsons-programm .parsons-zeile::before {
+  content: counter(parsons);
+  position: absolute; left: 0; top: 0; bottom: 0; width: 2.4em;
+  display: flex; align-items: center; justify-content: flex-end; padding-right: 6px;
+  color: var(--text-3); font-size: var(--fs-xs);
+  border-right: 1px solid var(--border);
+}
+.parsons-programm .parsons-zeile.gewaehlt { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-muted); }
+/* Rückmeldung nach dem zweiten Prüfen: Farbe nie allein, Zeichen rechts */
+.parsons-programm .parsons-zeile[data-urteil]::after {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--font); font-weight: 700;
+}
+.parsons-programm .parsons-zeile.z-ok    { border-color: var(--ok-b);   background-color: var(--ok-bg); }
+.parsons-programm .parsons-zeile.z-ebene { border-color: var(--warn-b); background-color: var(--warn-bg); }
+.parsons-programm .parsons-zeile.z-err   { border-color: var(--err-b);  background-color: var(--err-bg); }
+.parsons-programm .parsons-zeile.z-ok::after    { content: "✓"; color: var(--ok); }
+.parsons-programm .parsons-zeile.z-ebene::after { content: "⇥ ?"; color: var(--warn); }
+.parsons-programm .parsons-zeile.z-err::after   { content: "✗"; color: var(--err); }
+.parsons-programm .parsons-zeile[data-urteil] { padding-right: 44px; }
+
+/* Ziehen: Marke zeigt Einfügestelle und Einrückung */
+.parsons-marke {
+  height: 0; margin: 2px 0 2px calc(3em + var(--ebene, 0) * 4ch);
+  border-top: 3px solid var(--accent); border-radius: 2px;
+  list-style: none;
+}
+.parsons-zeile.zieht { opacity: .45; }
+
+/* Werkzeugleiste für die gewählte Zeile */
+.parsons-werkzeug { display: flex; flex-wrap: wrap; gap: 6px; margin: var(--sp-2) 0 0; }
+.parsons[data-einrueckung="vorgegeben"] .parsons-nur-frei,
+.parsons[data-einrueckung="ohne"] .parsons-nur-frei { display: none; }
+.parsons-bedienung { margin: 6px 0 0; color: var(--text-2); font-size: var(--fs-sm); }
+
+.parsons-aufloesung { margin: var(--sp-2) 0 0; padding-left: 1.4em; }
+.parsons-aufloesung:empty { display: none; }
+.parsons-aufloesung li { margin: 4px 0; }
+.parsons-aufloesung code { white-space: pre; }
+/* Ansage für Bildschirmleser, immer zusammen mit .sr-only: Änderungen am Programm */
+.parsons-ansage { white-space: normal; }
+
+/* Fehlersuche (fehlersucheWahl/fehlersuchePruefen): nummerierte Stellen eines
+   Schaubilds, Schemas oder Textes anklicken, die fehlerhaft sind; gesammelt geprüft,
+   zweistufig. Richtige Stellen tragen kein data-fehler. */
+.fehlersuche { margin: var(--sp-2) 0; }
+.fehlersuche-stellen { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin: var(--sp-2) 0 var(--sp-3); }
+.fehlersuche-stelle {
+  min-height: 40px;
+  padding: 7px 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-base);
+  cursor: pointer;
+}
+.fehlersuche-stelle:hover { border-color: var(--accent); }
+.fehlersuche-stelle:focus-visible { outline: 3px solid var(--accent-muted); outline-offset: 2px; }
+.fehlersuche-stelle.gewaehlt { border-color: var(--err-b); border-style: dashed; font-weight: 700; }
+.fehlersuche-stelle.z-ok    { border-color: var(--ok-b); border-style: solid; background: var(--ok-bg); }
+.fehlersuche-stelle.z-err   { border-color: var(--err-b); border-style: solid; background: var(--err-bg); }
+.fehlersuche-stelle.z-offen { border-color: var(--warn-b); border-style: solid; background: var(--warn-bg); }
+.fehlersuche-aufloesung { margin: var(--sp-2) 0 0; padding-left: 1.3em; }
+.fehlersuche-aufloesung li { margin: 0 0 var(--sp-1); }
+
+/* Klickstrecke (klickstreckeInit/-Schritt/-Gehe): ein Weg in Schritten, einer sichtbar.
+   Der Pfad oben wird aus data-titel der Schritte gebaut: erledigt ✓, aktuell hervorgehoben.
+   In der Vollansicht stehen alle Schritte untereinander, die Steuerung entfällt.
+   Alle Schritte liegen in derselben Rasterzelle: Die Strecke ist so hoch wie ihr
+   höchster Schritt, Weiter und Zurück bleiben beim Blättern an derselben Stelle. */
+.klickstrecke {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+.klickstrecke-pfad { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin: 0 0 var(--sp-3); padding: 0; list-style: none; }
+.klickstrecke-pfad li { display: flex; align-items: center; gap: var(--sp-1); }
+.klickstrecke-pfad li + li::before { content: '→'; color: var(--text-3); font-weight: 700; }
+.klickstrecke-pfad button {
+  font: inherit; font-size: var(--fs-sm); font-weight: 600;
+  padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--text-2); cursor: pointer;
+}
+.klickstrecke-pfad li.aktiv button { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.klickstrecke-pfad button::after { content: ' ✓'; color: var(--ok); visibility: hidden; }   /* Platz immer frei: der Pfad bricht beim Blättern nicht anders um */
+.klickstrecke-pfad li.erledigt button::after { visibility: visible; }
+.klickstrecke > * { grid-column: 1; }
+.klickstrecke-pfad { grid-row: 1; }
+.klickstrecke-schritt { grid-row: 2; visibility: hidden; }
+.klickstrecke-schritt.on { visibility: visible; }
+.klickstrecke-steuerung { grid-row: 3; }
+.klickstrecke-schritt > :last-child { margin-bottom: 0; }
+.klickstrecke-steuerung { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); margin-top: var(--sp-3); }
+.klickstrecke-stand { font-size: var(--fs-sm); color: var(--text-2); }
+.klickstrecke-zurueck:disabled, .klickstrecke-weiter:disabled { opacity: .45; cursor: default; }
+body.mode-full .klickstrecke { display: block; }
+body.mode-full .klickstrecke-schritt { display: block !important; visibility: visible; }
+body.mode-full .klickstrecke-schritt + .klickstrecke-schritt { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--border); }
+body.mode-full .klickstrecke-steuerung { display: none; }
+
+/* Tabellenvorschau (tabellenvorschauZeichnen/-Wahl): Varianten wählen, Beispieltabellen
+   zeigen sofort die Folgen. Mehrere Werte in einer Zelle rot, leere Felder gestreift,
+   frei markierte Zellen (z. B. widersprüchliche Werte) gelb; jeweils mit Zeichen. */
+.tabellenvorschau { margin: var(--sp-2) 0; }
+.tabellenvorschau-frage { font-weight: 700; margin: var(--sp-3) 0 var(--sp-1); }
+.tabellenvorschau-wahl { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.tabellenvorschau-wahl button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-light); font-weight: 700; }
+.tabellenvorschau-tabellen { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--sp-3); margin: var(--sp-3) 0; }
+.tabellenvorschau-name { font-family: var(--font-mono); font-weight: 700; margin: 0 0 var(--sp-1); }
+.tabellenvorschau-tabellen table { margin: 0; }
+.tabellenvorschau td.tabellenvorschau-mehr { background: var(--err-bg); font-weight: 700; }
+.tabellenvorschau td.tabellenvorschau-leer {
+  background: repeating-linear-gradient(45deg, var(--surface), var(--surface) 6px, var(--surface-2) 6px, var(--surface-2) 12px);
+  color: var(--text-3);
+}
+.tabellenvorschau td.tabellenvorschau-markiert { background: var(--warn-bg); font-weight: 700; }
+.tabellenvorschau-urteil { font-weight: 700; margin: var(--sp-2) 0; }
+
+/* SQL-Feld (assets/sqlfeld.js, seit 14.11.2026, erste Verwendung KL11LB5_05): Abfrage
+   eingeben, ausführen, Ergebnis als Tabelle; Prüfen vergleicht das Ergebnis. Kein eigener
+   Rahmen – das Feld steht in der Karte des Auftrags; die Ergebnistabelle ist eine Tabelle,
+   die Fehlermeldung ein Streifen. Zeilenzahl immer sichtbar, NULL mit Text, nie nur Farbe. */
+.sqlfeld { margin: var(--sp-2) 0 var(--sp-3); }
+.sqlfeld-eingabe {
+  display: block;
+  width: 100%;
+  min-height: calc(3lh + 18px);
+  max-height: 50vh;
+  field-sizing: content;
+  resize: vertical;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  line-height: 1.5;
+  tab-size: 2;
+}
+.sqlfeld-eingabe:focus { border-color: var(--accent); }
+.sqlfeld-ausgabe:empty { display: none; }
+.sqlfeld-ausgabe { margin: var(--sp-2) 0; }
+.sqlfeld-stand { margin: var(--sp-1) 0; color: var(--text-2); font-size: var(--fs-sm); }
+.sqlfeld-tabelle { width: auto; min-width: 50%; margin: var(--sp-1) 0; }
+.sqlfeld-tabelle th, .sqlfeld-tabelle td { font-family: var(--font-mono); white-space: nowrap; }
+.sqlfeld-tabelle td.sqlfeld-null { color: var(--text-3); font-style: italic; }
+/* Schema über der Eingabe (vom Skript erzeugt): Kursnotation, Streifen statt Fläche */
+.sqlfeld-schema {
+  margin: 0 0 var(--sp-2);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
+  border-left: 4px solid var(--accent-muted);
+}
+.sqlfeld-schema > summary { cursor: pointer; font-weight: 700; padding: var(--sp-1) 0; }
+.sqlfeld-schema-zeile { margin: 4px 0; font-family: var(--font-mono); line-height: 1.9; }
+.sqlfeld-schema-zeile .sqlfeld-tab { margin-right: var(--sp-1); }
+.sqlfeld-spalten { color: var(--text-2); }
+.sqlfeld-ps { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; color: var(--text); }
+.sqlfeld-tab {
+  min-height: 34px;
+  padding: 2px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: var(--fs-base);
+  font-weight: 700;
+  cursor: pointer;
+}
+.sqlfeld-tab:hover { border-color: var(--accent); }
+.sqlfeld-schema-titel { margin: var(--sp-2) 0 var(--sp-1); font-weight: 700; line-height: 1.9; }
+.sqlfeld-schema-titel .sqlfeld-tab { font-weight: 700; margin: 0 2px; }
+.sqlfeld-schema-verweise { margin: 0 0 var(--sp-1); padding-left: 1.2em; color: var(--text-2); font-family: var(--font-mono); overflow-wrap: anywhere; }
+.sqlfeld-schema-vorschau:empty { display: none; }
+.sqlfeld-fehler {
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-left: 4px solid var(--err-b);
+  border-radius: var(--radius-sm);
+}
+.sqlfeld-fehler code { display: block; margin: var(--sp-1) 0; font-family: var(--font-mono); color: var(--err); overflow-wrap: anywhere; }
+.sqlfeld-fehler p { margin: var(--sp-1) 0; }
+/* Aufgabenserie (seit 15.11.2026, erste Verwendung KL11LB5_05): mehrere Aufgaben an einem Feld.
+   Alle Aufgaben liegen in einer Rasterzelle (wie bei der Klickstrecke): Der Block ist so hoch wie
+   seine längste Aufgabe, Eingabe und Knöpfe springen beim Blättern nicht. Pfad wie Klickstrecke,
+   ✓ = gelöst (nicht: besucht), ★ = freiwillig. Vollansicht: alle Aufgabentexte untereinander. */
+.sqlfeld-serie { display: grid; grid-template-columns: minmax(0, 1fr); margin: 0 0 var(--sp-2); }
+.sqlfeld-serie > * { grid-column: 1; }
+.sqlfeld-serie-pfad { grid-row: 1; display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-1); margin: 0 0 var(--sp-2); padding: 0; list-style: none; }
+.sqlfeld-serie-pfad button {
+  min-width: 40px; min-height: 40px;
+  font: inherit; font-size: var(--fs-sm); font-weight: 600;
+  padding: 4px 12px; border: 1.5px solid var(--border); border-radius: 999px;
+  background: var(--surface); color: var(--text-2); cursor: pointer;
+}
+.sqlfeld-serie-pfad li.zusatz button::before { content: '★ '; }
+.sqlfeld-serie-pfad li.aktiv button { border-color: var(--accent); background: var(--accent-light); color: var(--accent); }
+.sqlfeld-serie-pfad button::after { content: ' ✓'; color: var(--ok); visibility: hidden; }
+.sqlfeld-serie-pfad li.geloest button::after { visibility: visible; }
+.sqlfeld-aufgabe { grid-row: 2; visibility: hidden; }
+.sqlfeld-aufgabe.on { visibility: visible; }
+.sqlfeld-aufgabe > :first-child { margin-top: 0; }
+.sqlfeld-aufgabe > :last-child { margin-bottom: 0; }
+.sqlfeld-serie-steuerung { grid-row: 3; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-2); margin-top: var(--sp-2); }
+.sqlfeld-serie-stand { font-size: var(--fs-sm); color: var(--text-2); }
+.sqlfeld-serie-zurueck:disabled, .sqlfeld-serie-weiter:disabled { opacity: .45; cursor: default; }
+body.mode-full .sqlfeld-serie { display: block; }
+body.mode-full .sqlfeld-aufgabe { visibility: visible; }
+body.mode-full .sqlfeld-aufgabe + .sqlfeld-aufgabe { margin-top: var(--sp-3); padding-top: var(--sp-3); border-top: 1px solid var(--border); }
+body.mode-full .sqlfeld-serie-steuerung { display: none; }
+/* Befehlsübersicht im Feld (Kopie von .sqlfeld-befehle-quelle): zugeklappter Streifen wie das Schema */
+.sqlfeld-befehle {
+  margin: 0 0 var(--sp-2);
+  padding: var(--sp-1) 0 var(--sp-1) var(--sp-3);
+  border-left: 4px solid var(--accent-muted);
+}
+.sqlfeld-befehle > summary { cursor: pointer; font-weight: 700; padding: var(--sp-1) 0; }
+.sqlfeld-befehle-quelle td code, .sqlfeld-befehle-inhalt td code { white-space: pre-wrap; }
+
+/* Kreuzworträtsel (kreuzwortBuild): Gitter aus data-rows, Zeilen durch "/"
+   getrennt, "." = leeres Feld. Im schmalen Fenster scrollt das Gitter in sich. */
+.kreuzwort { margin: var(--sp-2) 0; }
+.kreuzwort-gitter { display: grid; gap: 2px; width: max-content; max-width: 100%; overflow-x: auto; margin: var(--sp-2) 0; }
+.kreuzwort-feld { position: relative; width: 36px; height: 36px; }
+.kreuzwort-feld--leer { border-radius: 3px; background: var(--surface-2); }
+.kreuzwort-feld input {
+  width: 36px; height: 36px;
+  padding: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 3px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  text-align: center;
+  text-transform: uppercase;
+}
+.kreuzwort-feld input.ok  { border-color: var(--ok); background: var(--ok-bg); }
+.kreuzwort-feld input.err { border-color: var(--err); background: var(--err-bg); }
+.kreuzwort-nr { position: absolute; top: 0; left: 2px; z-index: 1; font-family: var(--font); font-size: var(--fs-xs); color: var(--text-3); }
+.kreuzwort-hinweise { color: var(--text-2); }
+
+/* Trainingsrunde (Aufgabengenerator): Aufgabe und Punktestand; Logik lokal */
+.training-aufgabe {
+  margin: var(--sp-2) 0;
+  padding: var(--sp-3);
+  background: var(--accent-light);
+  border: 2px solid var(--accent-muted);
+  border-radius: var(--radius);
+  color: var(--accent-hover);
+  font-family: var(--font-mono);
+  font-size: var(--fs-lg);
+  font-weight: 700;
+  text-align: center;
+}
+.training-stand { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-3); margin-top: var(--sp-2); color: var(--text-2); }
+.training-stand b { color: var(--accent-hover); }
+
+/* ==== Tooltip ======================================================= */
+.tt {
+  border-bottom: 1px dotted var(--accent);
+  cursor: help;
+  position: relative;
+}
+.tt:hover::after, .tt:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute; left: 0; top: 100%; z-index: 30;
+  width: max-content; max-width: min(280px, calc(100vw - 2 * var(--sp-3)));
+  /* Am rechten Rand wuerde die Sprechblase ueber das Fenster hinausragen und
+     die Seite breiter machen. ttAusrichten() in oberstufe-core.js setzt
+     --tt-shift auf den noetigen Versatz; ohne JavaScript bleibt es bei 0. */
+  translate: var(--tt-shift, 0px) 0;
+  margin-top: 4px;
+  padding: var(--sp-1) var(--sp-2);
+  background: var(--text);
+  color: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  white-space: normal;
+}
+
+/* ==== Darstellung =================================================== */
+.code-block {
+  position: relative;
+  margin: var(--sp-3) 0;
+  padding: var(--sp-3);
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  overflow-x: auto;
+}
+.code-block pre { margin: 0; font: inherit; }
+.code-block .copy-btn { position: absolute; top: 8px; right: 8px; font-family: var(--font); font-size: var(--fs-sm); }
+.code-block .kw { color: #c792ea; }
+.code-block .str { color: #c3e88d; }
+.code-block .com { color: #7f8ea3; font-style: italic; }
+.code-block .fn { color: #82aaff; }
+.code-block .gap { background: #334155; border-radius: 3px; padding: 0 4px; }
+
+/* Pseudocode: helle Variante, damit er auf einen Blick nicht wie ausführbarer
+   Python-Code aussieht. Schlüsselwörter (.kw) fett statt farbig. */
+.code-block--pseudo {
+  background: var(--surface-2);
+  color: var(--text);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.code-block--pseudo .kw { color: var(--text); font-weight: 700; }
+.code-block--pseudo .com { color: var(--text-3); }
+.code-block--pseudo .gap { background: var(--surface); border: 1px dashed var(--text-3); }
+.code-block--pseudo pre { margin: 0; font: inherit; }
+
+/* Struktogramm (Nassi-Shneiderman, DIN 66261) – reines HTML und CSS, keine Logik.
+   Nur der Außenrahmen ist eine Rahmenschicht; er trägt im Markup data-rahmen
+   (Diagramm, DESIGN.md §3 Regel 6). Innen zeichnen ausschließlich Einzellinien
+   (oben, links, unten) und Pseudoelemente – kein inneres Element hat drei Ränder.
+   Folgen (Struktogramm, Rumpf, Zweig) trennen ihre Blöcke durch eine Linie oben.
+   Text auf Fließtextgröße; nur die Astbeschriftung „ja/nein“ ist kleiner. */
+/* Gezeichnetes Struktogramm aus Kurs-Pseudocode (freiwillig, COMPONENTS.md §9).
+   Vor dem Zeichnen bzw. ohne assets/struktolab/ steht der Pseudocode da;
+   nach dem Zeichnen ist er nur noch für Bildschirmleser vorhanden. */
+.struktogramm-zeichnen {
+  max-width: 40rem;
+  margin: var(--sp-3) 0;
+}
+.struktogramm-zeichnen > struktolab-renderer { display: block; }
+.struktogramm-zeichnen-quelle {
+  margin: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-left: 3px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: var(--fs-sm);
+  white-space: pre;
+  overflow-x: auto;
+}
+.struktogramm-zeichnen.gezeichnet > .struktogramm-zeichnen-quelle {   /* wie .sr-only */
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+.struktogramm {
+  --sg-linie: var(--text-2);
+  --sg-strich: 1.5px solid var(--sg-linie);
+  width: fit-content;
+  min-width: min(100%, 20rem);
+  max-width: 100%;
+  margin: var(--sp-3) 0;
+  border: var(--sg-strich);
+  background: var(--surface);
+  font-size: var(--fs-base);
+  line-height: 1.4;
+  overflow-x: auto;
+}
+.struktogramm > * + *,
+.struktogramm-rumpf > * + *,
+.struktogramm-zweig > * + * { border-top: var(--sg-strich); }
+.struktogramm-verzweigung,
+.struktogramm-schleife { display: block; }
+.struktogramm-titel { padding: var(--sp-1) var(--sp-2); font-weight: 700; }
+.struktogramm-anweisung { padding: var(--sp-1) var(--sp-2); }
+/* Unterprogrammaufruf: zwei senkrechte Linien innen links und rechts */
+.struktogramm-aufruf { position: relative; padding: var(--sp-1) calc(var(--sp-2) + 10px); }
+.struktogramm-aufruf::before,
+.struktogramm-aufruf::after { content: ''; position: absolute; top: 0; bottom: 0; border-left: var(--sg-strich); }
+.struktogramm-aufruf::before { left: 6px; }
+.struktogramm-aufruf::after { right: 6px; }
+/* Verzweigung: Kopf mit den zwei Diagonalen, darunter zwei Zweige */
+.struktogramm-bedingung {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  min-height: 3.6em;
+  padding: 2px var(--sp-1);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), var(--sg-linie) calc(50% - .5px),
+                    var(--sg-linie) calc(50% + .5px), transparent calc(50% + 1px)) left / 50% 100% no-repeat,
+    linear-gradient(to top left, transparent calc(50% - 1px), var(--sg-linie) calc(50% - .5px),
+                    var(--sg-linie) calc(50% + .5px), transparent calc(50% + 1px)) right / 50% 100% no-repeat;
+}
+/* Der Bedingungstext liegt auf Flächenfarbe: Wird der Zweig schmal, laufen die
+   Diagonalen hinter dem Text weiter statt durch ihn hindurch. */
+.struktogramm-frage {
+  grid-column: 1 / -1; justify-self: center; max-width: 72%;
+  padding: 0 .3em; text-align: center; background: var(--surface);
+}
+.struktogramm-ja,
+.struktogramm-nein { grid-row: 2; align-self: end; font-size: var(--fs-sm); }
+.struktogramm-ja { grid-column: 1; }
+.struktogramm-nein { grid-column: 3; }
+.struktogramm-zweige { display: grid; grid-template-columns: 1fr 1fr; border-top: var(--sg-strich); }
+.struktogramm-zweig + .struktogramm-zweig { border-left: var(--sg-strich); }
+/* Schleifen: Bedingung oben (kopfgesteuert, auch Zählschleife) oder unten
+   (fußgesteuert, --fuss); der Rumpf ist eingerückt, links läuft der Balken. */
+.struktogramm-kopf,
+.struktogramm-fuss { padding: var(--sp-1) var(--sp-2); }
+.struktogramm-rumpf { margin-left: 2em; border-left: var(--sg-strich); }
+.struktogramm-kopf + .struktogramm-rumpf { border-top: var(--sg-strich); }
+.struktogramm-schleife--fuss > .struktogramm-rumpf { border-bottom: var(--sg-strich); }
+.struktogramm .eingabe { font-size: inherit; }
+
+.lesson-math { font-family: var(--font-math); font-weight: 500; white-space: nowrap; }
+.lesson-math sub, .lesson-math sup { font-size: var(--fs-xs); line-height: 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--sp-3) 0;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+th, td { padding: 8px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+th { background: var(--surface-2); font-weight: 700; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-family: var(--font-mono); }
+/* Betonte Zelle in einer Datentabelle: gelb wie {w, betont} der Tabellenvorschau, ohne ⚠️ –
+   für Werte, auf die ein Schritt zeigt (Wiederholung, Ergebnis), kein Fehler. Seit 11.11.2026, KL11LB5_04 */
+td.betont, th.betont { background: var(--warn-bg); font-weight: 700; }
+
+.table-scroll { overflow-x: auto; max-width: 100%; }
+/* Breite Tabelle im schmalen Fenster: sichtbarer Hinweis, dass sie seitlich scrollt */
+@media (max-width: 480px) {
+  .table-scroll--breit::before {
+    content: '↔ Tabelle seitlich wischen';
+    display: block;
+    margin-bottom: 2px;
+    color: var(--text-3);
+    font-size: var(--fs-sm);
+  }
+}
+
+/* Wertetabelle (Wahrheitstabelle, Zahlentabelle): Werte zentriert in Mono */
+table.wertetabelle { width: auto; min-width: 100%; }
+.wertetabelle th, .wertetabelle td { text-align: center; font-family: var(--font-mono); }
+.wertetabelle th.text, .wertetabelle td.text { text-align: left; font-family: var(--font); }
+.wertetabelle tr.markiert td { background: var(--accent-light); font-weight: 700; }
+.wertetabelle td.aufgedeckt { color: var(--ok); font-weight: 700; }
+
+.figure { margin: var(--sp-3) 0; }
+.figure svg { max-width: 100%; height: auto; display: block; }
+/* Schaltbild/Diagramm mit Beschriftung: im schmalen Fenster scrollt das Bild in
+   sich, statt die Beschriftung unter Lesegröße zu verkleinern */
+.figure--breit { overflow-x: auto; text-align: center; }
+.figure--breit svg { min-width: 540px; margin: 0 auto; }
+.figure .caption { color: var(--text-3); }
+
+.two-col { display: grid; gap: var(--sp-3); }
+@media (min-width: 720px) { .two-col { grid-template-columns: 1fr 1fr; } }
+
+/* ==== Chat-Simulation — Ebene 1 ===================================== */
+.chat-window {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  margin: var(--sp-3) 0;
+}
+.chat-header {
+  font-weight: 700; font-size: var(--fs-sm); color: var(--text-2);
+  margin-bottom: var(--sp-2); padding-bottom: var(--sp-2);
+  border-bottom: 1px solid var(--border);
+}
+.chat-messages { display: flex; flex-direction: column; gap: var(--sp-2); }
+.chat-message { display: none; gap: var(--sp-2); align-items: flex-start; }
+.chat-message.shown { display: flex; }
+.chat-avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: var(--fs-base); flex-shrink: 0;
+}
+.chat-bubble { background: var(--surface-2); border-radius: 0 10px 10px 10px; padding: 8px 12px; max-width: 80%; }
+.chat-sender { font-size: var(--fs-xs); font-weight: 700; display: block; margin-bottom: 2px; }
+.chat-bubble p { font-size: var(--fs-sm); margin: 0; line-height: 1.5; }
+.chat-controls { display: flex; gap: var(--sp-1); flex-wrap: wrap; margin-top: var(--sp-2); }
+.chat-prog { font-size: var(--fs-sm); color: var(--text-2); align-self: center; }
+/* Variante Verlauf: ein gespeicherter Chat als Daten, keine Simulation. Alle
+   Nachrichten sind ohne Skript sichtbar, der Nachrichtentext ist Kerninhalt und
+   steht in Fließtextgröße (DESIGN.md 2.1). Erste Verwendung KL11LB2_03. */
+.chat-window--verlauf .chat-message { display: flex; }
+body .wrap .phase .chat-window--verlauf .chat-bubble p { font-size: var(--fs-base) !important; }
+/* Uhrzeit einer Nachricht im Verlauf: eigene Zeile rechts unten in der Blase wie im
+   Messenger. Beschriftung (--fs-sm), nicht Kerninhalt; eigene Zeile, damit in der
+   Absenderzeile (--fs-xs) nicht zwei Größen nebeneinander stehen und auch eine
+   schmale Emoji-Blase bei 390 px lesbar bleibt. Gleich breite Ziffern, damit alle
+   Zeiten gleich lang sind. Erste Verwendung KL11LB2_04 (DS5, DS9 vorgesehen). */
+.chat-window--verlauf .chat-time {
+  display: block; text-align: right; margin-top: 2px;
+  font-size: var(--fs-sm); color: var(--text-2); line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==== Barrierefreiheit ============================================== */
+:focus-visible {
+  outline: 3px solid var(--accent-muted);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==== Schmale Ansicht =============================================== */
+@media (max-width: 560px) {
+  .wrap { padding: var(--sp-2) var(--sp-3) var(--sp-3); }
+  .card, .station, .subcard { padding: var(--sp-3); }
+}
